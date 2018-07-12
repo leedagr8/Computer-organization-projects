@@ -1,0 +1,5 @@
+﻿  Instruction.cpp
+c:\users\lionardo\documents\visual studio 2017\projects\ecgr3183_p2\ecgr3183_p2\instruction.cpp(1059): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\lionardo\documents\visual studio 2017\projects\ecgr3183_p2\ecgr3183_p2\instruction.cpp(1090): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  ECGR3183_P2.vcxproj -> C:\Users\Lionardo\Documents\Visual Studio 2017\Projects\ECGR3183_P2\Debug\ECGR3183_P2.exe
+  ECGR3183_P2.vcxproj -> C:\Users\Lionardo\Documents\Visual Studio 2017\Projects\ECGR3183_P2\Debug\ECGR3183_P2.pdb (Partial PDB)
