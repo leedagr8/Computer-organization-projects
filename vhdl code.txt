@@ -1,0 +1,1053 @@
+ 
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity elevator_fsm is
+   Port ( 
+          clk: in std_logic;
+         -- count: in std_logic;
+        --  FFKey: in std_logic;        --fire fighter key input
+          --ODB: in std_logic;    --open door button
+          --CDB: in std_logic;    --close door button
+          --FF0: in std_logic;
+          --FF1: in std_logic;
+          --FF2: in std_logic;
+          --FF3: IN std_logic;
+          U0: in std_logic;    --ground level call button --up
+          U1: in std_logic;    --first level call button  --up
+          D1: in std_logic;    --first level call button  --down
+          U2: in std_logic;    --second level call button  --up
+          D2: in std_logic;    --second level call button  --down
+          D3: in std_logic;    --third level call button  --down
+          F0: in std_logic;    --ground floor button      
+          F1: in std_logic;    --first floor button    
+          F2: in std_logic;    --second floor button
+          F3: in std_logic;    --third floor button
+          IR: in std_logic;    --IR Beam input
+          --door_sig: in std_logic;  --signal to open or close door --1 is open & 0 is close
+          
+          light: out std_logic;
+          sound: out std_logic;
+          door: out std_logic
+        --  OpenDoor: out std_logic;
+         -- CloseDoor: out std_logic
+          );
+end entity;
+
+architecture Behavioral of elevator_fsm is
+--declarity region of vhdl file
+signal counter: integer :=0;
+type states is( s0, s1, s2, s3);
+signal current_s, next_s: states := s1;
+--signal FSM : states := s1;
+
+begin
+
+process(current_s, U0, U1, U2, D1, D2, D3, F0, F1, F2, F3, IR) --add as needed                  
+   begin
+--    if clk = '1' and count = '1' then
+   
+--while FFKey = '0' loop    
+   
+   case current_s is 
+   
+------------------------------------------------------------------------------
+-------------------------going to ground floor--------------------------------
+------------------------------------------------------------------------------    
+   when s0 =>    
+    if (clk = '1' and clk'event) then --Generate your clock
+    counter <= 0;
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if (U0 = '1' or F0 = '1') then  --if up button on ground floor or ground floor button is pressed
+    if (counter <1) then -- door latching
+    counter <= counter +1;
+
+   elsif (counter < 2) then -- door open
+      door <= '1';            --door will open
+         sound <= '1';
+         light <= '1';       
+         counter <= counter +1;   
+   elsif (counter < 3) then --closes door
+    door <= '0';
+    counter <= counter +1;
+   elsif( counter < 8) then -- travels to floor 1
+    counter <= counter +1;
+   else 
+    next_s <= s1;
+   end if;             
+   else
+       light <= '1';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;    --reset stage
+   end if;
+   end if;
+   
+    if (clk = '1' and clk'event) then --Generate your clock
+      counter <= 0;
+     --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+     if (U0 = '1' or F0 = '1') then  --if up button on ground floor or ground floor button is pressed
+      if (counter <1) then -- door latching
+      counter <= counter +1;
+  
+     elsif (counter < 2) then -- door open
+        door <= '1';            --door will open
+           sound <= '1';
+           light <= '1';       
+           counter <= counter +1;   
+     elsif (counter < 3) then --closes door
+      door <= '0';
+      counter <= counter +1;
+     elsif( counter < 13) then -- travels to floor 2
+      counter <= counter +1;
+     else 
+      next_s <= s2;
+     end if;             
+     else
+         light <= '1';
+         door <= '0';
+         sound <= '0';
+         next_s <= s1;    --reset stage
+     end if;
+     end if;
+     
+      if (clk = '1' and clk'event) then --Generate your clock
+        counter <= 0;
+       --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+       if (U0 = '1' or F0 = '1') then  --if up button on ground floor or ground floor button is pressed
+        if (counter <1) then -- door latching
+        counter <= counter +1;
+    
+       elsif (counter < 2) then -- door open
+          door <= '1';            --door will open
+             sound <= '1';
+             light <= '1';       
+             counter <= counter +1;   
+       elsif (counter < 3) then --closes door
+        door <= '0';
+        counter <= counter +1;
+       elsif( counter < 18) then -- travels to floor 3
+        counter <= counter +1;
+       else 
+        next_s <= s3;
+       end if;             
+       else
+           light <= '1';
+           door <= '0';
+           sound <= '0';
+           next_s <= s1;    --reset stage
+       end if;
+       end if;
+
+   when s1 =>  
+   
+    if (clk = '1' and clk'event) then --Generate your clock
+      counter <= 0;
+     --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+     if (U1 = '1' or F1 = '1') then  --if up button on ground floor or ground floor button is pressed
+      if (counter <1) then -- door latching
+      counter <= counter +1;
+  
+     elsif (counter < 2) then -- door open
+        door <= '1';            --door will open
+           sound <= '1';
+           light <= '1';       
+           counter <= counter +1;   
+     elsif (counter < 3) then --closes door
+      door <= '0';
+      counter <= counter +1;
+     elsif( counter < 8) then -- travels to floor 1
+      counter <= counter +1;
+     else 
+      next_s <= s2; -- second floor
+     end if;             
+     else
+         light <= '1';
+         door <= '0';
+         sound <= '0';
+         next_s <= s1;    --reset stage
+     end if;
+     end if;
+     
+      if (clk = '1' and clk'event) then --Generate your clock
+        counter <= 0;
+       --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+       if (D1 = '1' or F1 = '1') then  --if up button on ground floor or ground floor button is pressed
+        if (counter <1) then -- door latching
+        counter <= counter +1;
+    
+       elsif (counter < 2) then -- door open
+          door <= '1';            --door will open
+             sound <= '1';
+             light <= '1';       
+             counter <= counter +1;   
+       elsif (counter < 3) then --closes door
+        door <= '0';
+        counter <= counter +1;
+       elsif( counter < 8) then -- travels to floor 1
+        counter <= counter +1;
+       else 
+        next_s <= s0; -- ground floor
+       end if;             
+       else
+           light <= '1';
+           door <= '0';
+           sound <= '0';
+           next_s <= s1;    --reset stage
+       end if;
+       end if;
+   
+    if (clk = '1' and clk'event) then --Generate your clock
+          counter <= 0;
+         --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+         if (U1 = '1' or F1 = '1') then  --if up button on ground floor or ground floor button is pressed
+          if (counter <1) then -- door latching
+          counter <= counter +1;
+      
+         elsif (counter < 2) then -- door open
+            door <= '1';            --door will open
+               sound <= '1';
+               light <= '1';       
+               counter <= counter +1;   
+         elsif (counter < 3) then --closes door
+          door <= '0';
+         elsif( counter < 13) then -- travels to floor 3
+          counter <= counter +1;
+         else 
+          next_s <= s1;
+         end if;             
+         else
+             light <= '1';
+             door <= '0';
+             sound <= '0';
+             next_s <= s1;    --reset stage
+         end if;
+         end if;
+   
+     
+   if (clk = '1' and clk'event) then
+        counter <= 0;
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if ((U1 = '1' or D1 = '1') or F1 = '1') then  --if up button on ground floor or ground floor button is pressed 
+   if (counter < 5)
+   then counter <= counter +1;
+   elsif (counter < 6) then              
+       --if elevator not on floor, have to account for the time the elevator will take to get to the floor
+       --once elevator is on floor then 1 second to open the door
+       --implement counter here!!
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+     --  if (IR = '0') then      --IR beam is off
+       --   door <= '1';        --door will stay open            
+    --   else
+          --if IR is 0 for 2 seconds then door will close
+          -- 1 second to close the door
+     --     door <= '0';        --IR beam is on so door will close
+      -- end if;      
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor    
+       next_s <= s1;        --elevator will go to ground floor
+   
+   else
+       light <= '1';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   end if;
+   end if;
+   
+   when s2 =>
+   counter <= 0;
+   if (clk = '1' and clk'event) then
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if ((U2 = '1' or D2 = '1') or F2 = '1') then  --if up button on ground floor or ground floor button is pressed
+    if (counter < 5)
+      then counter <= counter+1;
+    elsif(counter <6) then              
+       --if elevator not on floor, have to account for the time the elevator will take to get to the floor
+       --once elevator is on floor then 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+    --   if (IR = '0') then      --IR beam is off
+      --    door <= '1';        --door will stay open            
+       --else
+          --if IR is 0 for 2 seconds then door will close
+          -- 1 second to close the door
+      --    door <= '0';        --IR beam is on so door will close
+       --end if;      
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor    
+       next_s <= s2;        --elevator will go to ground floor
+   
+   else
+       light <= '1';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   end if;
+   end if;
+   
+   when s3 =>
+   counter <=0;
+   if (clk = '1' and clk'event) then
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if (D3 = '1' or F3 = '1') then  --if up button on ground floor or ground floor button is pressed   
+   if (counter < 5)
+         then counter <= counter+1;  
+    elsif(counter <6) then         
+       --if elevator not on floor, have to account for the time the elevator will take to get to the floor
+       --once elevator is on floor then 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+    --   if (IR = '0') then      --IR beam is off
+      --    door <= '1';        --door will stay open            
+      -- else
+          --if IR is 0 for 2 seconds then door will close
+          -- 1 second to close the door
+        --  door <= '0';        --IR beam is on so door will close
+       --end if;      
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor    
+       next_s <= s3;        --elevator will go to ground floor
+   
+   else
+       light <= '1';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;
+   --end case;
+--end process;
+
+------------------------------------------------------------------------------
+-----------------------------going to first floor-----------------------------
+------------------------------------------------------------------------------
+--process(current_s, U1, D1, F1, IR)
+   --begin
+   
+   --case current_state is 
+   when s0 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+   --end case;
+--end process;
+
+----------------------------------------------------------------------------
+--------------------------------going to second floor-----------------------
+----------------------------------------------------------------------------
+--process (current_s, U2, D2, F2, IR)
+   --begin
+   
+    when s0 =>
+   if (U0 = '1' or F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if ((U1 = '1' or D1 = '1') or F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if ((U2 = '1' or D2 = '1') or F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if (D3 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+--end process;
+
+-----------------------------------------------------------------------------
+--------------------------------going to third floor-------------------------
+-----------------------------------------------------------------------------
+--process (current_s, D3, F3, IR)
+   --begin
+   
+    when s0 =>
+   if (U0 = '1' or F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if ((U1 = '1' or D1 = '1') or F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if ((U2 = '1' or D2 = '1') or F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if (D3 = '1' or F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+   
+   end case;
+end loop;    
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------    
+-------------------------Fire Fighter Mode-----------------------------------
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+while FFKey = '1' loop
+
+   case current_s is 
+   
+------------------------------------------------------------------------------
+-------------------------going to ground floor--------------------------------
+------------------------------------------------------------------------------    
+   when s0 =>    --
+   
+   if (FF0 = '1') then  --if up button on ground floor               
+      --elevator must move to groung floor from which ever floor the elevator is at 
+      --once elevator is on floor then 1 second to open the door       
+      door <= '1'; --door will open automatically for the fire fighter
+      --need clock to count how long the door is kept open
+      if (CDB = '1') then
+           door <= '0';
+      end if;
+     -- if (ODB = '1') then 
+           door <= '1';
+      end if;
+      if (F0 = '1') then     
+           next_s <= s0;        --elevator will go to ground floor
+      end if;
+      
+   else
+       door <= '0';
+       next_s <= s0;    
+   end if;
+   
+   when s1 =>    
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+       if (FF1 = '1') then  --if up button on ground floor               
+      --elevator must move to groung floor from which ever floor the elevator is at 
+      --once elevator is on floor then 1 second to open the door       
+      door <= '1'; --door will open automatically for the fire fighter
+      --need clock to count how long the door is kept open
+      if (CDB = '1') then
+           door <= '0';
+      end if;
+      if (ODB = '1') then 
+           door <= '1';
+      end if;
+      if (F0 = '1') then     
+           next_s <= s0;        --elevator will go to ground floor
+      end if;
+      
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if ((U2 = '1' or D2 = '1') and F0 = '1') then  --if up button on ground floor or ground floor button is pressed              
+       --if elevator not on floor, have to account for the time the elevator will take to get to the floor
+       --once elevator is on floor then 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+          door <= '1';        --door will stay open            
+       else
+          --if IR is 0 for 2 seconds then door will close
+          -- 1 second to close the door
+          door <= '0';        --IR beam is on so door will close
+       end if;      
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor    
+       next_s <= s0;        --elevator will go to ground floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   
+   when s3 =>
+   --moving elevator to floor, either by calling elevator to the floor from the outside or by pressing the floor button on the inside
+   if (D3 = '1' and F0 = '1') then  --if up button on ground floor or ground floor button is pressed              
+       --if elevator not on floor, have to account for the time the elevator will take to get to the floor
+       --once elevator is on floor then 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+          door <= '1';        --door will stay open            
+       else
+          --if IR is 0 for 2 seconds then door will close
+          -- 1 second to close the door
+          door <= '0';        --IR beam is on so door will close
+       end if;      
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor    
+       next_s <= s0;        --elevator will go to ground floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;
+   --end case;
+--end process;
+
+------------------------------------------------------------------------------
+-----------------------------going to first floor-----------------------------
+------------------------------------------------------------------------------
+--process(current_s, U1, D1, F1, IR)
+   --begin
+   
+   --case current_state is 
+   when s0 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if (U1 = '1' or D1 = '1' or F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s1;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+   --end case;
+--end process;
+
+----------------------------------------------------------------------------
+--------------------------------going to second floor-----------------------
+----------------------------------------------------------------------------
+--process (current_s, U2, D2, F2, IR)
+   --begin
+   
+    when s0 =>
+   if (U0 = '1' and F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if ((U1 = '1' or D1 = '1') and F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if ((U2 = '1' or D2 = '1') and F2 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if ((D3 = '1' and F1 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s2;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+--end process;
+
+-----------------------------------------------------------------------------
+--------------------------------going to third floor-------------------------
+-----------------------------------------------------------------------------
+--process (current_s, D3, F3, IR)
+   --begin
+   
+    when s0 =>
+   if (U0 = '1' and F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s0;
+   end if;
+   
+   
+   when s1 =>
+   if ((U1 = '1' or D1 = '1') and F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s1;
+   end if;
+   
+   when s2 =>
+   if ((U2 = '1' or D2 = '1') and F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s2;
+   end if;
+   
+   when s3 =>
+   if ((D3 = '1' and F3 = '1') then   --if up button or down button on first floor or second floor button is pressed
+       -- 1 second to open the door
+       door <= '1';            --door will open
+       sound <= '1';
+       light <= '1';        
+       if (IR = '0') then      --IR beam is off
+           door <= '1';        --door will stay open            
+       else
+           -- 1 second to close the door
+           door <= '0';        --IR beam is on so door will close
+       end if;   
+       -- need to account for time the elevator will take to get to desired floor
+       --takes 5 seconds to move from one floor to another floor                 
+       next_s <= s3;        --elevator will go to first floor
+   
+   else
+       light <= '0';
+       door <= '0';
+       sound <= '0';
+       next_s <= s3;
+   end if;    
+   
+   end case;
+
+end looop;
+   
+
+end process;    
+
+
+end Behavioral;

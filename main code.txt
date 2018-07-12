@@ -1,0 +1,133 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 10/31/2017 09:30:33 AM
+-- Design Name: 
+-- Module Name: elevator_tb - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity elevator_tb is
+--  Port ( );
+end elevator_tb;
+
+architecture Behavioral of elevator_tb is
+component elevator 
+      Port ( 
+        clk: in std_logic;
+    --    count: in std_logic;
+--        FFKey: in std_logic;        --fire fighter key input
+--        ODB: in std_logic;    --open door button
+--        CDB: in std_logic;    --close door button
+--        FF0: in std_logic;
+--        FF1: in std_logic;
+--        FF2: in std_logic;
+--        FF3: IN std_logic;
+        U0: in std_logic;    --ground level call button --up
+        U1: in std_logic;    --first level call button  --up
+        D1: in std_logic;    --first level call button  --down
+        U2: in std_logic;    --second level call button  --up
+        D2: in std_logic;    --second level call button  --down
+        D3: in std_logic;    --third level call button  --down
+        F0: in std_logic;    --ground floor button      
+        F1: in std_logic;    --first floor button    
+        F2: in std_logic;    --second floor button
+        F3: in std_logic;    --third floor button
+--        IR: in std_logic;    --IR Beam input
+        --door_sig: in std_logic;  --signal to open or close door --1 is open & 0 is close
+        
+        light: out std_logic;
+        sound: out std_logic;
+        door: out std_logic;
+        OpenDoor: out std_logic;
+        CloseDoor: out std_logic
+        );
+end component;
+--inputs
+signal clk: std_logic := '0';
+signal count: std_logic := '0';
+signal U0, U1, U2,D1, D2, D3: std_logic:= '0' ;
+signal F0, F1, F2, F3: std_logic := '0';
+-- outputs
+signal light, sound, door, OpenDoor, CloseDoor:std_logic '0';
+--clock period definitions
+constant clk_period : time := 1 ns;
+
+begin
+        -- Instantiate the Unit Under Test (UUT)
+  uut: elevator PORT MAP(
+  clk => clk,
+--  count => count,
+  U0 => U0,
+  U1 => U1,
+  U2 => U2,
+  D1 => D1,
+  D2 => D2,
+  D3 => D3,
+  F0 => F0,
+  F1 => F1,
+  F2 => F2,
+  F3 => F3,
+  light => light,
+  sound => sound,
+  door => door,
+  OpenDoor => OpenDoor,
+  CloseDoor => CloseDoor
+  );
+  
+  begin 
+  clk <= '0';
+  wait for clk_period/2; -- for .5 seconds signal is '0'
+  clk <= '1';
+  wait for clk_period/2; -- for next .5 seconds signal is '1'.
+  end process;
+  
+  process
+    begin
+    
+    U0 <='1';
+    --sends a signal to the ground floor button
+    wait for 7 ns;
+    door <= '1';            --door will open
+            sound <= '1';
+            light <= '1'; 
+      wait for 1 ns;
+    -- this gives the elevator time to travel to the ground floor, latch itself on, and open the door
+    F2 <='1';
+    --This travels the student to the second floor
+    wait for 15 ns;
+    door <= '1';            --door will open
+            sound <= '1';
+            light <= '1'; 
+    wait;
+    end process;
+
+end Behavioral;
+
+
+
+
